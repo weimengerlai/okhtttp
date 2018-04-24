@@ -1,5 +1,6 @@
 package com.bawei.a1501atokhttp.login.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -7,12 +8,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.bawei.a1501atokhttp.MainActivity;
 import com.bawei.a1501atokhttp.R;
 import com.bawei.a1501atokhttp.Tokhttp1501A;
 import com.bawei.a1501atokhttp.base.BaseActivity;
 import com.bawei.a1501atokhttp.login.presenter.LoginPresenter;
 
-public class LoginActivity extends BaseActivity implements View.OnClickListener{
+public class LoginActivity extends BaseActivity implements View.OnClickListener,ViewLoginInterface{
+
 
     // 控件
     private EditText edt_login_username;
@@ -29,7 +32,20 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // 实例化p层
         loginPresenter = new LoginPresenter();
+
+//        // 使用反射实例化
+//        try {
+//            // 通过反射机制加载类
+//            Class preSentclass = Class.forName("com.bawei.a1501atokhttp.login.presenter.LoginPresenter");
+//            // 通过 getConstructor 实例化出类对象
+//            preSentclass.getConstructor().newInstance();
+//
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+
 
         // 调用方法
         initHeader();
@@ -37,6 +53,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
         setWiget();
 
     }
+
 
 
 
@@ -60,6 +77,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
         // 设置监听
         btn_login_submit.setOnClickListener(this);
 
+        // 给 p层设置监听
+        loginPresenter.setOnLoginListener(this);
+
     }
 
     @Override
@@ -75,7 +95,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
 
                 // 调用UI层的逻辑判断
                 LoginSubmit();
-
 
                 break;
         }
@@ -130,6 +149,29 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
 
         // 将内容传递给p层,p层帮助我们链接model层,进行数据解析同时返回成功的结果,方便前端进行跳转
         loginPresenter.LoginSubmit(username,password, LoginActivity.this);
+
+    }
+
+
+
+    // 登陆成功的方法
+    @Override
+    public void LginSuccess(int userId, String token) {
+
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.putExtra(MainActivity.USERID,userId);
+        intent.putExtra(MainActivity.TOKEN,token);
+        startActivity(intent);
+
+    }
+
+
+    // 登陆失败需要执行的方法
+    @Override
+    public void LoginFail(String message) {
+
+        // 提示密码不正确
+        Tokhttp1501A.toastUtil.ShowLong(LoginActivity.this,message);
 
     }
 }
