@@ -47,7 +47,6 @@ public class LoginOkhttp {
                 map, Login.class, oKHttpSingTop.Methods.PSOT);
 
 
-
         // 设置监听,返回结果,通过进行解析,通过接口的形式返回给p层
         Tokhttp1501A.oKHttpSingTop.setCallbackM(new oKHttpSingTop.CallbackM() {
 
